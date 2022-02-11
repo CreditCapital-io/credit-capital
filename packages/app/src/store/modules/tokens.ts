@@ -44,7 +44,7 @@ const actions = {
 
     const owner = rootState.accounts.activeAccount;
     // @ts-ignore
-    const allowance = 5; // await contract?.allowance(owner, address);
+    const allowance = await contract?.allowance(owner, address);
 
     return allowance >= amount;
   },

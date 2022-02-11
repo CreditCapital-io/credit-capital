@@ -70,7 +70,7 @@
               </div>
             </div>
             <button type="submit" @click="joinPool()" class="btn-custom">
-              Add
+              {{ liquidityButtonString }}
             </button>
           </div>
         </div>
@@ -93,24 +93,26 @@ const toast = useToast();
 let swapToken = ref(0);
 let swapTokenResult = ref(0);
 let swapButtonString = ref("Enter");
+let liquidityButtonString = ref("Add");
 
 const isConnected = computed(() => store.getters["accounts/isUserConnected"]);
+const wallet = computed(() => store.getters["accounts/getActiveAccount"]);
+const contract = computed(() => store.getters["contracts/getBalancerVaultContract"]);
+
 async function swap() {
   if (isConnected.value) {
-    const wallet = computed(() => store.getters["accounts/getActiveAccount"]);
-    const contract = computed(() => store.getters["contracts/getBalancerVaultContract"]);
 
     if (swapButtonString.value === 'Approve') {
       await store.dispatch("tokens/approve", {
         contract: contract.value,
-        amount: parseFloat(swapToken.value),
+        amount: parseFloat(swapToken.value as string),
         address: wallet.value,
       });
       swapButtonString.value = "Enter";
     } else {
       const allowance = await store.dispatch("tokens/checkAllowance", {
         contract: contract.value,
-        amount: parseFloat(swapToken.value),
+        amount: parseFloat(swapToken.value as string),
         address: wallet.value,
       });
 
