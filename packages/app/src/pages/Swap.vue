@@ -17,7 +17,7 @@
               <div class="swap-input-body">
                 <div class="swap-input-inner">
                   <input
-                    type="text"
+                    type="number"
                     @input="exchangeCAPLToUSDC()"
                     v-model="swapAmount"
                     class="input-custom"
@@ -62,7 +62,7 @@ import {
 import { checkConnection, checkBalance } from "@/utils/notifications";
 
 const store: any = useStore();
-let swapAmount: Ref<number|null> = ref(null);
+let swapAmount: Ref<number | null> = ref(null);
 let swapTokenSymbol: Ref<string> = ref("USDC");
 let swapToTokenSymbol: Ref<string> = ref("CAPL");
 

@@ -99,6 +99,8 @@ import { useStore } from "@/store";
 import { ref, watchEffect } from "vue";
 import { showConnectResult } from "@/utils/notifications";
 import { shortenAddress, caplUSDConversion, format } from "@/utils";
+// import Toast from "vue-toastification";
+//import detectEthereumProvider from "@metamask/detect-provider";
 
 export default {
   setup() {

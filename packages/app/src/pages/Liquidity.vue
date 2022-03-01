@@ -14,7 +14,7 @@
                 <div class="panel-explanation"><span>amount</span></div>
                 <div class="panel-explanation">
                   <input
-                    type="text"
+                    type="number"
                     @input="onChange()"
                     v-model="caplLiquidity"
                     class="input-custom"
@@ -24,7 +24,9 @@
               </div>
               <div class="text-right">
                 <div class="panel-explanation"><span>My Balance</span></div>
-                <div class="panel-explanation">{{ caplBalance.toFixed(4) }} CAPL</div>
+                <div class="panel-explanation">
+                  {{ caplBalance.toFixed(4) }} CAPL
+                </div>
               </div>
             </div>
             <div class="panel-display swap-panel-display">
@@ -32,7 +34,7 @@
                 <div class="panel-explanation"><span>amount</span></div>
                 <div class="panel-explanation">
                   <input
-                    type="text"
+                    type="number"
                     @input="onChange()"
                     v-model="usdcLiquidity"
                     class="input-custom"
@@ -42,7 +44,9 @@
               </div>
               <div class="text-right">
                 <div class="panel-explanation"><span>My Balance</span></div>
-                <div class="panel-explanation">{{ usdcBalance.toFixed(4) }} USDC</div>
+                <div class="panel-explanation">
+                  {{ usdcBalance.toFixed(4) }} USDC
+                </div>
               </div>
             </div>
             <button
@@ -137,24 +141,24 @@ const approveAll = async () => {
     await store.dispatch("tokens/approveBalancerVault", {
       symbol: "USDC",
       // amount: usdcBalance.value,
-      amount: 2**256 - 1,
+      amount: 2 ** 256 - 1,
     });
   } else if (approvalFlag.value == "CAPL") {
     await store.dispatch("tokens/approveBalancerVault", {
       symbol: "CAPL",
       // amount: caplBalance.value,
-      amount: 2**256 - 1,
+      amount: 2 ** 256 - 1,
     });
   } else {
     await store.dispatch("tokens/approveBalancerVault", {
       symbol: "USDC",
       // amount: usdcBalance.value,
-      amount: 2**256 - 1,
+      amount: 2 ** 256 - 1,
     });
     await store.dispatch("tokens/approveBalancerVault", {
       symbol: "CAPL",
       // amount: caplBalance.value,
-      amount: 2**256 - 1,
+      amount: 2 ** 256 - 1,
     });
   }
 };
