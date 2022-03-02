@@ -101,6 +101,7 @@ import { showConnectResult } from "@/utils/notifications";
 import { shortenAddress, caplUSDConversion, format } from "@/utils";
 // import Toast from "vue-toastification";
 //import detectEthereumProvider from "@metamask/detect-provider";
+// const URL = {https://metamask.io/download/}
 
 export default {
   setup() {
@@ -136,11 +137,17 @@ export default {
       CAPLPrice,
       showMoons,
       connectWeb3: async () => {
+        if (typeof window.ethereum !== "undefined") {
+          console.log("MetaMask is installed!");
+        } else {
+          alert(`please install metamask first`);
+        }
         await store.dispatch("accounts/connectWeb3");
         await store.dispatch("rewards/getRewardsInfo");
         await store.dispatch("balancer/getPoolTokens");
         await store.dispatch("dashboard/fetchTVL");
         const price = format(caplUSDConversion(1, store));
+
         if (price) {
           CAPLPrice.value = price;
         }
