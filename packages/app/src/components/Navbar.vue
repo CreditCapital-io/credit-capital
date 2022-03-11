@@ -10,8 +10,8 @@
             </router-link>
           </div>
           <a class="mobile-menu-icon" href="javascript:void(0);">
-            <i class="las la-bars"></i
-          ></a>
+            <i class="las la-bars"></i>
+          </a>
         </div>
       </div>
     </div>
@@ -29,20 +29,20 @@
                 <router-link to="/">Home</router-link>
               </li>
               <li class="nav-item">
-                <router-link to="reward">Rewards</router-link>
-              </li>
-              <li class="nav-item">
                 <router-link to="stake">Stake</router-link>
               </li>
               <li class="nav-item">
-                <router-link to="liquidity">Liquidity</router-link>
+                <router-link to="reward">Rewards</router-link>
               </li>
               <li class="nav-item">
                 <router-link to="swap">Swap</router-link>
               </li>
+              <li class="nav-item">
+                <router-link to="liquidity">Liquidity</router-link>
+              </li>
               <!-- <li class="nav-item">
                 <router-link to="treasury">Treasury</router-link>
-              </li> -->
+              </li>-->
             </ul>
           </div>
           <div>
@@ -51,14 +51,12 @@
                 <span>CAPL &dollar;{{ CAPLPrice }}</span>
               </li>
               <li class="nav-item">
-                <router-link to="dashboard"
-                  ><button class="connectButton">Dashboard</button>
+                <router-link to="dashboard">
+                  <button class="connectButton">Dashboard</button>
                 </router-link>
               </li>
               <li class="nav-item">
-                <button class="connectButton" @click="connectWeb3">
-                  {{ buttonString }}
-                </button>
+                <button class="connectButton" @click="connectWeb3">{{ buttonString }}</button>
               </li>
             </ul>
           </div>
@@ -80,9 +78,10 @@
           <div class="option-inner">
             <div class="others-option">
               <div class="option-item">
-                <a href="contact.html" class="btn theme-btn-1"
-                  >Get Started <i class="las la-angle-right"></i
-                ></a>
+                <a href="contact.html" class="btn theme-btn-1">
+                  Get Started
+                  <i class="las la-angle-right"></i>
+                </a>
               </div>
             </div>
           </div>
@@ -96,16 +95,18 @@
 <script lang="ts">
 import { computed } from "vue";
 import { useStore } from "@/store";
-import { ref, watchEffect } from "vue";
+import { ref, watchEffect, Ref, reactive } from "vue";
 import { showConnectResult } from "@/utils/notifications";
 import { shortenAddress, caplToUSD, format } from "@/utils";
 
 export default {
   setup() {
     const store = useStore();
+    let interval: any;
 
-    let CAPLPrice = ref("0.00");
+    let CAPLPrice = reactive(ref("0.00"));
     let buttonString = ref("Connect Wallet");
+    let poolTokens: Ref<string | undefined> = reactive(ref("0"))
 
     const connectWeb3 = async () => {
       await store.dispatch("accounts/connectWeb3");
@@ -113,13 +114,17 @@ export default {
         await store.dispatch("rewards/getRewardsInfo");
         await store.dispatch("balancer/getPoolTokens");
         await store.dispatch("dashboard/fetchTVL");
-        const price = format(caplToUSD(1, store));
-        if (price) {
-          CAPLPrice.value = price;
-        }
       }
 
       showConnectResult(store);
+    };
+
+    const getTokenBalance = async () => {
+      await store.dispatch("balancer/getPoolTokens");
+      poolTokens.value = format(caplToUSD(1, store));
+      if (poolTokens.value) {
+        CAPLPrice.value = poolTokens.value;
+      }
     };
 
     const isConnected = computed(
@@ -129,20 +134,19 @@ export default {
     const wallet = computed(() => store.getters["accounts/getActiveAccount"]);
 
     // check the localstorage for determine the user was connected
-    if (localStorage.getItem("isConnected")) {
-      // reconnect web3
-      connectWeb3();
-    }
+    watchEffect(() => {
+      if (localStorage.getItem("isConnected")) {
+        connectWeb3();
+        interval = setInterval(getTokenBalance, 2000);
+      } else {
+        clearInterval(interval);
+      }
+    });
 
     watchEffect(() => {
       isConnected.value
         ? (buttonString.value = shortenAddress(wallet.value))
         : (buttonString.value = "Connect Wallet");
-
-      const price = format(caplToUSD(1, store));
-      if (price) {
-        CAPLPrice.value = price;
-      }
     });
 
     function showMoons() {
